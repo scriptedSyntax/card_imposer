@@ -1,36 +1,118 @@
-# Card Imposer
+# Card Imposer (CLI + PyQt GUI)
 
-A lightweight, automated prepress tool designed to arrange multiple card layouts onto single larger sheets for efficient printing. This utility automates the **step-and-repeat (N-up)** process while managing precise alignments, margins, and cutting marks.
+Reusable print-imposition tool for 2-page business-card PDFs:
+- Page 1 = FRONT design
+- Page 2 = BACK design
 
-## 🚀 Features
+Output is a 2-page print-ready PDF (any supported size):
+- Output page 1: imposed fronts
+- Output page 2: imposed backs in identical positions for duplex cut alignment
 
-- **Grid Layout Creator (N-Up / Step-and-Repeat):** Easily duplicate a single card design in a grid pattern (e.g., 8-up, 10-up, 24-up) to maximize paper efficiency.
-- **Front & Back Duplex Alignment:** Accurately couples double-sided card files so that the front and back line up perfectly when flipped or printed duplex.
-- **Bleed & Gutter Management:** Automatically handles bleed zones, safety margins, and custom spacing (gutters) between cards.
-- **Smart Trim Marks:** Automatically inserts crop marks, trim lines, and cutting guide marks for guillotine operations or digital card cutters.
-- **Multi-Format Sheet Support:** Built-in templates for common press and printer sheets (A4, Letter, SRA3, 12x18 inches, etc.) alongside custom dimension options.
+## Install
 
-## 📂 Repository
-
-Clone the repository:
-
-```bash
-git clone https://github.com/scriptedSyntax/card_imposer.git
+```powershell
+cd c:\Users\PlayerX\Desktop\m\card_imposer
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
 ```
 
-## ⚙️ Configuration
+## Fast start (copy/paste)
 
-You can customize the layout via options or a configuration file:
+From `c:\Users\PlayerX\Desktop\m\card_imposer`:
 
-- **Card Dimensions:** Set standard sizes (e.g., Business Cards 3.5" x 2") or custom widths and heights.
-- **Sheet Size:** Define target print sheet dimensions.
-- **Gutter Size:** Adjust spacing between cards for safe cuts.
-- **Bleed Margin:** Set color extension limits (e.g., 0.125" / 3mm).
+```powershell
+python impose_cards_gui.py
+```
 
-## 🤝 Contributing
+Notes:
+- GUI is PyQt-based (faster than Tkinter for this app).
+- You must run `Preview Layout` before `Generate Imposed PDF`.
+- Header includes `Instructions`, `Portfolio`, and `GitHub`.
+- On `Generate`, a loading dialog is shown until the PDF is finished.
 
-Contributions, issues, and feature requests are welcome! Feel free to check the [Issues](https://github.com/scriptedSyntax/card_imposer/issues) page.
+If you want CLI directly:
 
-## 📜 License
+```powershell
+python impose_cards.py "..\Blue White Illustrated Cleaning Service Business Card.pdf" --crop-marks on --test-sheet on
+```
 
-This project is licensed under the [MIT License](LICENSE).
+Scale cards to 120% before imposition:
+
+```powershell
+python impose_cards.py "..\Blue White Illustrated Cleaning Service Business Card.pdf" --scale-percent 120
+```
+
+## CLI Usage
+
+```powershell
+python impose_cards.py "c:\path\to\cards.pdf"
+```
+
+Default output:
+- `cards_imposed.pdf` in the same folder as input.
+
+### Auto-fit at 100% with crop marks
+
+```powershell
+python impose_cards.py "c:\path\to\cards.pdf" --crop-marks on
+```
+
+### Force 2 columns x 5 rows
+
+```powershell
+python impose_cards.py "c:\path\to\cards.pdf" --cols 2 --rows 5 --scale-percent 100
+```
+
+### Use a different print size
+
+Preset:
+```powershell
+python impose_cards.py "c:\path\to\cards.pdf" --page-size LETTER
+```
+
+Custom mm:
+```powershell
+python impose_cards.py "c:\path\to\cards.pdf" --page-size CUSTOM --page-width-mm 300 --page-height-mm 450
+```
+
+### Try duplex transform options
+
+```powershell
+python impose_cards.py "c:\path\to\cards.pdf" --back-transform none
+python impose_cards.py "c:\path\to\cards.pdf" --back-transform rotate180
+python impose_cards.py "c:\path\to\cards.pdf" --back-transform mirrorX
+python impose_cards.py "c:\path\to\cards.pdf" --back-transform mirrorY
+python impose_cards.py "c:\path\to\cards.pdf" --back-transform mirrorX_rotate180
+python impose_cards.py "c:\path\to\cards.pdf" --back-transform mirrorY_rotate180
+```
+
+### Test-sheet labels
+
+```powershell
+python impose_cards.py "c:\path\to\cards.pdf" --crop-marks on --test-sheet on
+```
+
+From GUI:
+- Choose print size preset or `CUSTOM` width/height in mm.
+- Use `Instructions` in the header for the built-in guide.
+- Preview is schematic and updates to selected print size.
+
+## Print instructions
+
+- Print at `Actual size` / `100%`
+- Disable `Fit to page`
+- Start tests with duplex `Flip on short edge`
+- If back orientation is wrong, try transform values in this order:
+  1. `none`
+  2. `rotate180`
+  3. `mirrorX`
+  4. `mirrorY`
+  5. `mirrorX_rotate180`
+  6. `mirrorY_rotate180`
+
+## Notes
+
+- Input PDF must contain exactly 2 pages or the tool raises an error.
+- Scaling is supported with `--scale-percent` (100 means source size).
+- Margins and gaps are in millimeters and converted to points for PDF placement precision.
